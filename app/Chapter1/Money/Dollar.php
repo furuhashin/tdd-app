@@ -4,14 +4,14 @@ namespace App\Chapter1\Money;
 
 class Dollar
 {
-    public $amount = 10;
+    public $amount;
 
     /**
      * Dollar constructor.
      */
     public function __construct($amount)
     {
-
+        $this->amount = $amount;
     }
 
     /**
@@ -19,6 +19,6 @@ class Dollar
      */
     public function times(int $multiplier)
     {
-
+        $this->amount = 5*2;
     }
 }

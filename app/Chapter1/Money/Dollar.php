@@ -4,7 +4,10 @@ namespace App\Chapter1\Money;
 
 class Dollar
 {
-    public $amount;
+    /**
+     * @var int
+     */
+    private $amount;
 
     /**
      * Dollar constructor.

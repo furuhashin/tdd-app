@@ -2,13 +2,8 @@
 
 namespace App\Chapter1\Money;
 
-class Franc
+class Franc extends Money
 {
-    /**
-     * @var int
-     */
-    private $amount;
-
     /**
      * Franc constructor.
      * @param int $amount
@@ -25,18 +20,5 @@ class Franc
     public function times(int $multiplier): Franc
     {
         return new Franc($this->amount * $multiplier);
-    }
-
-    /**
-     * @param Franc $object
-     * @return bool
-     */
-    public function equals(object $object): bool
-    {
-        /** @var Franc $franc */
-        $franc = $object;
-        return $this->amount == $franc->amount;
-
-
     }
 }

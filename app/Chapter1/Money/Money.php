@@ -19,6 +19,6 @@ class Money
     {
         /** @var Money $money */
         $money = $object;
-        return $this->amount == $money->amount;
+        return $this->amount == $money->amount && get_class($this) == get_class($money);
     }
 }

@@ -3,6 +3,7 @@
 
 namespace Tests\Unit;
 
+use App\Chapter1\Money\Money;
 use PHPUnit\Framework\TestCase;
 use App\Chapter1\Money\Dollar;
 use App\Chapter1\Money\Franc;
@@ -15,9 +16,10 @@ class MoneyTest extends TestCase
      */
     public function Multiplication(): void
     {
-        $five = new Dollar(5);
-        $this->assertEquals(new Dollar(10), $five->times(2));
-        $this->assertEquals(new Dollar(15), $five->times(3));
+        /** @var Money $five */
+        $five = Money::dollar(5);
+        $this->assertEquals(Money::dollar(10), $five->times(2));
+        $this->assertEquals((Money::dollar(15)), $five->times(3));
     }
 
     /**
@@ -27,22 +29,22 @@ class MoneyTest extends TestCase
     public function Equality(): void
     {
         /** @var Dollar $five */
-        $five = new Dollar(5);
-        $this->assertTrue($five->equals(new Dollar(5)));
+        $five = Money::dollar(5);
+        $this->assertTrue($five->equals(Money::dollar(5)));
         /** @var Dollar $five */
-        $five = new Dollar(5);
-        $this->assertFalse($five->equals(new Dollar(6)));
+        $five = Money::dollar(5);
+        $this->assertFalse($five->equals(Money::dollar(6)));
 
         /** @var Franc $five */
-        $five = new Franc(5);
-        $this->assertTrue($five->equals(new Franc(5)));
+        $five = Money::franc(5);
+        $this->assertTrue($five->equals(Money::franc(5)));
         /** @var Franc $five */
-        $five = new Franc(5);
-        $this->assertFalse($five->equals(new Franc(6)));
+        $five = Money::franc(5);
+        $this->assertFalse($five->equals(Money::franc(6)));
 
         /** @var Franc $five */
-        $five = new Franc(5);
-        $this->assertFalse($five->equals(new Dollar(5)));
+        $five = Money::franc(5);
+        $this->assertFalse($five->equals(Money::dollar(5)));
     }
 
     /**
@@ -52,8 +54,8 @@ class MoneyTest extends TestCase
     public function FrancMultiplication(): void
     {
         /** @var Franc $five */
-        $five = new Franc(5);
-        $this->assertEquals(new Franc(10), $five->times(2));
-        $this->assertEquals(new Franc(15), $five->times(3));
+        $five = Money::franc(5);
+        $this->assertEquals(Money::franc(10), $five->times(2));
+        $this->assertEquals(Money::franc(15), $five->times(3));
     }
 }

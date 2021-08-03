@@ -6,12 +6,32 @@ namespace App\Chapter1\Money;
 
 abstract class Money
 {
-    /**
-     * @var int
-     */
-    protected $amount;
+    /** @var int  */
+    protected int $amount;
+    /** @var string  */
+    protected string $currency;
 
-    abstract function times(int $multiplier);
+    /**
+     * Franc constructor.
+     * @param int $amount
+     */
+    public function __construct(int $amount, string $currency)
+    {
+        $this->amount = $amount;
+        $this->currency = $currency;
+    }
+
+    public abstract function times(int $multiplier);
+
+
+    /**
+     * なんでアクセス修飾子がついていないんだ？
+     * @return string
+     */
+    function currency()
+    {
+        return $this->currency;
+    }
 
     /**
      * @param object $object
@@ -30,7 +50,7 @@ abstract class Money
      */
     public static function dollar(int $amount): Dollar
     {
-        return new Dollar($amount);
+        return new Dollar($amount,"USD");
     }
 
     /**
@@ -39,6 +59,6 @@ abstract class Money
      */
     public static function franc(int $amount): Franc
     {
-        return new Franc($amount);
+        return new Franc($amount,"CHF");
     }
 }

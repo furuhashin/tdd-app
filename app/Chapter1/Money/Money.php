@@ -4,7 +4,7 @@
 namespace App\Chapter1\Money;
 
 
-abstract class Money
+class Money
 {
     /** @var int  */
     protected int $amount;
@@ -21,8 +21,14 @@ abstract class Money
         $this->currency = $currency;
     }
 
-    public abstract function times(int $multiplier);
-
+    /**
+     * @param int $multiplier
+     * @return Money
+     */
+    public function times(int $multiplier): Money
+    {
+        return new Money($this->amount * $multiplier,$this->currency);
+    }
 
     /**
      * なんでアクセス修飾子がついていないんだ？
@@ -41,7 +47,17 @@ abstract class Money
     {
         /** @var Money $money */
         $money = $object;
-        return $this->amount == $money->amount && get_class($this) == get_class($money);
+        // strcmp()は等しければ 0 を返します
+        return $this->amount == $money->amount && !strcmp($this->currency(),$money->currency()) ;
+    }
+
+    /**
+     * @todo 動かないので修正
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->amount . " " . $this->currency;
     }
 
     /**

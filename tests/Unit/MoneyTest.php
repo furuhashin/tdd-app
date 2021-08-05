@@ -18,8 +18,8 @@ class MoneyTest extends TestCase
     {
         /** @var Money $five */
         $five = Money::dollar(5);
-        $this->assertEquals(Money::dollar(10), $five->times(2));
-        $this->assertEquals((Money::dollar(15)), $five->times(3));
+        $this->assertTrue($five->times(2)->equals(Money::dollar(10)));
+        $this->assertTrue($five->times(3)->equals(Money::dollar(15)));
     }
 
     /**
@@ -55,8 +55,13 @@ class MoneyTest extends TestCase
     {
         /** @var Franc $five */
         $five = Money::franc(5);
-        $this->assertEquals(Money::franc(10), $five->times(2));
-        $this->assertEquals(Money::franc(15), $five->times(3));
+        /**
+         * 本当は$this->assertEquals($five->times(2),Money::franc(10));としたかったが、
+         * assertEqualsがMoneyのequals()を使ってくれないので仕方なくこうした
+         * TODO 後でPHPUnitを拡張してみる
+         */
+        $this->assertTrue($five->times(2)->equals(Money::franc(10)));
+        $this->assertTrue($five->times(3)->equals(Money::franc(15)));
     }
 
     /**
@@ -68,5 +73,14 @@ class MoneyTest extends TestCase
         $franc = Money::franc(1);
         $this->assertEquals("USD",$dollar->currency());
         $this->assertEquals("CHF",$franc->currency());
+    }
+
+    /**
+     * @test
+     */
+    public function DifferentClassEquality()
+    {
+        $franc = new Money(10,"CHF");
+        $this->assertTrue($franc->equals(new Franc(10,"CHF")));
     }
 }

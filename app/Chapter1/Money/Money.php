@@ -4,7 +4,7 @@
 namespace App\Chapter1\Money;
 
 
-class Money
+class Money implements ExpressionInterface
 {
     /** @var int  */
     protected int $amount;
@@ -76,5 +76,14 @@ class Money
     public static function franc(int $amount): Money
     {
         return new Money($amount,"CHF");
+    }
+
+    /**
+     * @param Money $addend
+     * @return ExpressionInterface
+     */
+    public function plus(Money $addend): ExpressionInterface
+    {
+        return new Money($this->amount + $addend->amount, $this->currency);
     }
 }

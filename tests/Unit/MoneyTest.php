@@ -3,8 +3,10 @@
 
 namespace Tests\Unit;
 
+use App\Chapter1\Money\ExpressionInterface;
 use App\Chapter1\Money\Money;
 use App\Chapter1\Money\Bank;
+use App\Chapter1\Money\Sum;
 use PHPUnit\Framework\TestCase;
 
 class MoneyTest extends TestCase
@@ -65,12 +67,53 @@ class MoneyTest extends TestCase
     {
         /** @var Money $five */
         $five = Money::dollar(5);
-
         $sum = $five->plus($five);
         /** @var Bank $bank */
         $bank = new Bank();
         $reduced = $bank->reduce($sum,"USD");
         $this->assertEquals(Money::dollar(10),$reduced);
+    }
 
+    /**
+     * @test
+     */
+    public function PlusReturnsSum()
+    {
+        /** @var Money $five */
+        $five = Money::dollar(5);
+        /** @var ExpressionInterface $result */
+        $result = $five->plus($five);
+        /**
+         * @var \Closure $s
+         * $sum = (Sum)$result のように独自クラスのキャストができないためこうする
+         */
+        $s = fn($result): Sum  => $result;
+        $sum = $s($result);
+        $this->assertEquals($five,$sum->augend);
+        $this->assertEquals($five,$sum->addend);
+    }
+
+    /**
+     * @test
+     */
+    public function ReduceSum()
+    {
+        /** @var ExpressionInterface $sum */
+        $sum = new Sum(Money::dollar(3),Money::dollar(4));
+        $bank = new Bank();
+        /** @var Money $result */
+        $result = $bank->reduce($sum,"USD");
+        $this->assertEquals(Money::dollar(7),$result);
+    }
+
+    /**
+     * @test
+     */
+    public function ReduceMoney()
+    {
+        /** @var Bank $bank */
+        $bank = new Bank();
+        $result = $bank->reduce(Money::dollar(1),"USD");
+        $this->assertEquals(Money::dollar(1),$result);
     }
 }

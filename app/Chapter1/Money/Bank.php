@@ -9,8 +9,8 @@ class Bank
      * @param string $to
      * @return Money
      */
-    function reduce(ExpressionInterface $source,string $to): Money
+    function reduce(ExpressionInterface $source, string $to): Money
     {
-        return Money::dollar(10);
+        return $source->reduce($to);
     }
 }

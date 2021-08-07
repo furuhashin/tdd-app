@@ -6,10 +6,16 @@ namespace App\Chapter1\Money;
 
 class Money implements ExpressionInterface
 {
-    /** @var int  */
-    protected int $amount;
-    /** @var string  */
-    protected string $currency;
+    /**
+     * @var int
+     * phpのprotectedには同一パッケージ内でのアクセスが許可されていないためpublicに変更
+     */
+    public int $amount;
+    /**
+     * @var string
+     * phpのprotectedには同一パッケージ内でのアクセスが許可されていないためpublicに変更
+     */
+    public string $currency;
 
     /**
      * Franc constructor.
@@ -28,6 +34,24 @@ class Money implements ExpressionInterface
     public function times(int $multiplier): Money
     {
         return new Money($this->amount * $multiplier,$this->currency);
+    }
+
+    /**
+     * @param Money $addend
+     * @return ExpressionInterface
+     */
+    public function plus(Money $addend): ExpressionInterface
+    {
+        return new Sum($this, $addend);
+    }
+
+    /**
+     * @param string $to
+     * @return Money
+     */
+    public function reduce(string $to): Money
+    {
+        return $this;
     }
 
     /**
@@ -76,14 +100,5 @@ class Money implements ExpressionInterface
     public static function franc(int $amount): Money
     {
         return new Money($amount,"CHF");
-    }
-
-    /**
-     * @param Money $addend
-     * @return ExpressionInterface
-     */
-    public function plus(Money $addend): ExpressionInterface
-    {
-        return new Money($this->amount + $addend->amount, $this->currency);
     }
 }

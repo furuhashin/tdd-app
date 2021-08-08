@@ -29,18 +29,18 @@ class Money implements ExpressionInterface
 
     /**
      * @param int $multiplier
-     * @return Money
+     * @return ExpressionInterface
      */
-    public function times(int $multiplier): Money
+    public function times(int $multiplier): ExpressionInterface
     {
         return new Money($this->amount * $multiplier,$this->currency);
     }
 
     /**
-     * @param Money $addend
+     * @param ExpressionInterface $addend
      * @return ExpressionInterface
      */
-    public function plus(Money $addend): ExpressionInterface
+    public function plus(ExpressionInterface $addend): ExpressionInterface
     {
         return new Sum($this, $addend);
     }

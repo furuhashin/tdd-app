@@ -136,4 +136,20 @@ class MoneyTest extends TestCase
         $bank = new Bank();
         $this->assertEquals(1,$bank->rate("USD","USD"));
     }
+
+    /**
+     * @test
+     */
+    public function MixedAddition()
+    {
+        /** @var ExpressionInterface $fiveBucks */
+        $fiveBucks = Money::dollar(5);
+        /** @var ExpressionInterface $tenFrancs */
+        $tenFrancs = Money::franc(10);
+        $bank = new Bank();
+        $bank->addRate("CHF","USD",2);
+        $result = $bank->reduce($fiveBucks->plus($tenFrancs),"USD");
+        self::assertEquals(Money::dollar(10),$result);
+
+    }
 }

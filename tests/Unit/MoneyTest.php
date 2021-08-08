@@ -149,7 +149,45 @@ class MoneyTest extends TestCase
         $bank = new Bank();
         $bank->addRate("CHF","USD",2);
         $result = $bank->reduce($fiveBucks->plus($tenFrancs),"USD");
-        self::assertEquals(Money::dollar(10),$result);
+        $this->assertEquals(Money::dollar(10),$result);
+    }
 
+    /**
+     * @test
+     */
+    public function SumPlusMoney()
+    {
+        /** @var ExpressionInterface $fiveBucks */
+        $fiveBucks = Money::dollar(5);
+        /** @var ExpressionInterface $tenFrancs */
+        $tenFrancs = Money::franc(10);
+        $bank = new Bank();
+        $bank->addRate("CHF","USD",2);
+        $tmp = new Sum($fiveBucks,$tenFrancs);
+        /** @var ExpressionInterface $sum */
+        $sum = $tmp->plus($fiveBucks);
+        /** @var Money $result */
+        $result = $bank->reduce($sum,"USD");
+        $this->assertEquals(Money::dollar(15),$result);
+    }
+
+    /**
+     * @test
+     */
+    public function SumTimes()
+    {
+        /** @var ExpressionInterface $fiveBucks */
+        $fiveBucks = Money::dollar(5);
+        /** @var ExpressionInterface $tenFrancs */
+        $tenFrancs = Money::franc(10);
+        $bank = new Bank();
+        $bank->addRate("CHF", "USD", 2);
+
+        $tmp = new Sum($fiveBucks, $tenFrancs);
+        /** @var ExpressionInterface $sum */
+        $sum = $tmp->times(2);
+        /** @var Money $result */
+        $result = $bank->reduce($sum, "USD");
+        $this->assertEquals(Money::dollar(20), $result);
     }
 }

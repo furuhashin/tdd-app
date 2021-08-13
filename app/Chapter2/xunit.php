@@ -10,10 +10,12 @@ class xunit
 class TestResult
 {
     private int $runCount;
+    private int $errorCount;
 
     public function __construct()
     {
         $this->runCount = 0;
+        $this->errorCount = 0;
     }
 
     public function testStarted()
@@ -21,9 +23,14 @@ class TestResult
         $this->runCount = $this->runCount + 1;
     }
 
+    public function testFailed()
+    {
+        $this->errorCount = $this->errorCount + 1;
+    }
+
     public function summary()
     {
-        return sprintf("%d run, 0 failed", $this->runCount);
+        return sprintf("%d run, %d failed", $this->runCount,$this->errorCount);
     }
 }
 
@@ -49,8 +56,13 @@ class TestCase
         $result = new TestResult();
         $result->testStarted();
         $this->setUp();
-        $method = $this->name;
-        $this->$method();
+        try {
+            $method = $this->name;
+            $this->$method();
+        } catch (\Exception $e) {
+            $result->testFailed();
+        }
+
         $this->tearDown();
         return $result;
     }
@@ -109,13 +121,24 @@ class TestCaseTest extends TestCase
         $result = $test->run();
         assert("1 run, 1 failed" === $result->summary());
     }
+
+    public function testFailedResultFormatting()
+    {
+        /** @var TestResult $result */
+        $result = new TestResult();
+        $result->testStarted();
+        $result->testFailed();
+        assert("1 run, 1 failed" === $result->summary());
+    }
 }
-ExecuteTest("testTemplateMethod");
-ExecuteTest("testResult");
-//Execute("testFailedResult");
+
+print(ExecuteTest("testTemplateMethod")->summary());
+print(ExecuteTest("testResult")->summary());
+print(ExecuteTest("testFailedResult")->summary());
+print(ExecuteTest("testFailedResultFormatting")->summary());
 
 function ExecuteTest($testCase)
 {
     $testCaseTest = new TestCaseTest($testCase);
-    $testCaseTest->run();
+    return $testCaseTest->run();
 }

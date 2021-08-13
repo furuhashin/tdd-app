@@ -16,8 +16,13 @@ class TestCase
         $this->name = $name;
     }
 
-    public function setUp()
+    protected function setUp()
     {
+    }
+
+    protected function tearDown()
+    {
+
     }
 
     public function run()
@@ -25,48 +30,40 @@ class TestCase
         $this->setUp();
         $method = $this->name;
         $this->$method();
+        $this->tearDown();
     }
 }
 
 class WasRun extends TestCase
 {
-    public $wasRun;
-    public $wasSetUp;
+    public $log;
 
     public function setUp()
     {
-        $this->wasRun = null;
-        $this->wasSetUp = 1;
+        $this->log = "setUp";
     }
 
-    public function testMethod()
+    protected function testMethod()
     {
         $this->wasRun = 1;
+        $this->log = "{$this->log} testMethod";
+    }
+
+    protected function tearDown()
+    {
+        $this->log = "{$this->log} tearDown";
     }
 }
 
 class TestCaseTest extends TestCase
 {
-    public function setUp()
+    public function testTemplateMethod()
     {
-        $this->test = new WasRun("testMethod");
-    }
-
-    public function testRunning()
-    {
-        $this->test->run();
-        assert($this->test->wasRun);
-    }
-
-    public function testSetUp()
-    {
-        $this->test->run();
-        assert($this->test->wasSetUp);
+        $test = new WasRun("testMethod");
+        $test->run();
+        assert("setUp testMethod tearDown" === $test->log);
     }
 }
 
-$testCaseTest = new TestCaseTest("testRunning");
-$testCaseTest->run();
-
-$testCaseTest = new TestCaseTest("testSetUp");
+$testCaseTest = new TestCaseTest("testTemplateMethod");
 $testCaseTest->run();

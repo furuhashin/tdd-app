@@ -62,7 +62,6 @@ class TestCase
         } catch (\Exception $e) {
             $result->testFailed();
         }
-
         $this->tearDown();
         return $result;
     }
@@ -134,8 +133,8 @@ class TestCaseTest extends TestCase
 
 print(ExecuteTest("testTemplateMethod")->summary());
 print(ExecuteTest("testResult")->summary());
-print(ExecuteTest("testFailedResult")->summary());
-print(ExecuteTest("testFailedResultFormatting")->summary());
+print(ExecuteTest("testFailedResult")->summary()); //1 run, 0 failedになるのだがいいのか？
+print(ExecuteTest("testFailedResultFormatting")->summary()); //1 run, 0 failedになるのだがいいのか？
 
 function ExecuteTest($testCase)
 {

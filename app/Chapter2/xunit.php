@@ -7,6 +7,26 @@ class xunit
 
 }
 
+class TestResult
+{
+    private int $runCount;
+
+    public function __construct()
+    {
+        $this->runCount = 0;
+    }
+
+    public function testStarted()
+    {
+        $this->runCount = $this->runCount + 1;
+    }
+
+    public function summary()
+    {
+        return sprintf("%d run, 0 failed", $this->runCount);
+    }
+}
+
 class TestCase
 {
     protected $name;
@@ -22,15 +42,17 @@ class TestCase
 
     protected function tearDown()
     {
-
     }
 
     public function run()
     {
+        $result = new TestResult();
+        $result->testStarted();
         $this->setUp();
         $method = $this->name;
         $this->$method();
         $this->tearDown();
+        return $result;
     }
 }
 
@@ -49,6 +71,11 @@ class WasRun extends TestCase
         $this->log = "{$this->log} testMethod";
     }
 
+    protected function testBrokenMethod()
+    {
+        throw new \Exception();
+    }
+
     protected function tearDown()
     {
         $this->log = "{$this->log} tearDown";
@@ -59,11 +86,36 @@ class TestCaseTest extends TestCase
 {
     public function testTemplateMethod()
     {
+        /** @var WasRun $test */
         $test = new WasRun("testMethod");
         $test->run();
         assert("setUp testMethod tearDown" === $test->log);
     }
-}
 
-$testCaseTest = new TestCaseTest("testTemplateMethod");
-$testCaseTest->run();
+    public function testResult()
+    {
+        /** @var WasRun $test */
+        $test = new WasRun("testMethod");
+        /** @var TestResult $result */
+        $result = $test->run();
+        assert("1 run, 0 failed" === $result->summary());
+    }
+
+    public function testFailedResult()
+    {
+        /** @var WasRun $test */
+        $test = new WasRun("testBrokenMethod");
+        /** @var TestResult $result */
+        $result = $test->run();
+        assert("1 run, 1 failed" === $result->summary());
+    }
+}
+ExecuteTest("testTemplateMethod");
+ExecuteTest("testResult");
+//Execute("testFailedResult");
+
+function ExecuteTest($testCase)
+{
+    $testCaseTest = new TestCaseTest($testCase);
+    $testCaseTest->run();
+}

@@ -51,9 +51,8 @@ class TestCase
     {
     }
 
-    public function run()
+    public function run(TestResult $result)
     {
-        $result = new TestResult();
         $result->testStarted();
         $this->setUp();
         try {
@@ -63,7 +62,32 @@ class TestCase
             $result->testFailed();
         }
         $this->tearDown();
-        return $result;
+    }
+}
+
+class TestSuite
+{
+
+    /**
+     * @var TestCase[]
+     */
+    private array $tests;
+
+    public function __construct()
+    {
+        $this->tests = [];
+    }
+
+    public function add(TestCase $test)
+    {
+        $this->tests[] = $test;
+    }
+
+    public function run(TestResult $result)
+    {
+        foreach ($this->tests as $test) {
+            $test->run($result);
+        }
     }
 }
 
@@ -95,11 +119,18 @@ class WasRun extends TestCase
 
 class TestCaseTest extends TestCase
 {
+    private TestResult $result;
+
+    public function setUp()
+    {
+        $this->result = new TestResult();
+    }
+
     public function testTemplateMethod()
     {
         /** @var WasRun $test */
         $test = new WasRun("testMethod");
-        $test->run();
+        $test->run($this->result);
         assert("setUp testMethod tearDown" === $test->log);
     }
 
@@ -107,37 +138,42 @@ class TestCaseTest extends TestCase
     {
         /** @var WasRun $test */
         $test = new WasRun("testMethod");
-        /** @var TestResult $result */
-        $result = $test->run();
-        assert("1 run, 0 failed" === $result->summary());
+        $test->run($this->result);
+        assert("1 run, 0 failed" === $this->result->summary());
     }
 
     public function testFailedResult()
     {
         /** @var WasRun $test */
         $test = new WasRun("testBrokenMethod");
-        /** @var TestResult $result */
-        $result = $test->run();
-        assert("1 run, 1 failed" === $result->summary());
+        $test->run($this->result);
+        assert("1 run, 1 failed" === $this->result->summary());
     }
 
     public function testFailedResultFormatting()
     {
-        /** @var TestResult $result */
-        $result = new TestResult();
-        $result->testStarted();
-        $result->testFailed();
-        assert("1 run, 1 failed" === $result->summary());
+        $this->result->testStarted();
+        $this->result->testFailed();
+        assert("1 run, 1 failed" === $this->result->summary());
+    }
+
+    public function testSuite()
+    {
+        $suite = new TestSuite();
+        $suite->add(new WasRun("testMethod"));
+        $suite->add(new WasRun("testBrokenMethod"));
+        $suite->run($this->result);
+        assert("2 run, 1 failed" === $this->result->summary());
+
     }
 }
 
-print(ExecuteTest("testTemplateMethod")->summary());
-print(ExecuteTest("testResult")->summary());
-print(ExecuteTest("testFailedResult")->summary()); //1 run, 0 failedになるのだがいいのか？
-print(ExecuteTest("testFailedResultFormatting")->summary()); //1 run, 0 failedになるのだがいいのか？
-
-function ExecuteTest($testCase)
-{
-    $testCaseTest = new TestCaseTest($testCase);
-    return $testCaseTest->run();
-}
+$suite = new TestSuite();
+$suite->add(new TestCaseTest("testTemplateMethod"));
+$suite->add(new TestCaseTest("testResult"));
+$suite->add(new TestCaseTest("testFailedResult")); //テストが成功していれば1run 例外を投げるからfailedになるわけではない
+$suite->add(new TestCaseTest("testFailedResultFormatting")); //
+$suite->add(new TestCaseTest("testSuite"));
+$result = new TestResult();
+$suite->run($result);
+print($result->summary());
